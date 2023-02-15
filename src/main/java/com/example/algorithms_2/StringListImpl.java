@@ -1,12 +1,13 @@
 package com.example.algorithms_2;
 
+import java.util.Arrays;
 import java.util.Objects;
 
-public class StringListImpl implements StringList{
+public class StringListImpl implements StringList {
 
     private static final int INITIAL_SIZE = 15;
 
-    private final String[] data;
+    private String[] data;
 
     private int capacity;
 
@@ -15,7 +16,7 @@ public class StringListImpl implements StringList{
         this.capacity = capacity;
     }
 
-    public StringListImpl () {
+    public StringListImpl() {
         data = new String[INITIAL_SIZE];
         capacity = 0;
     }
@@ -27,6 +28,7 @@ public class StringListImpl implements StringList{
         data = new String[a];
         capacity = 0;
     }
+
     @Override
     public Integer add(Integer item) {
         return add(capacity, item);
@@ -41,7 +43,7 @@ public class StringListImpl implements StringList{
             throw new IllegalArgumentException("Нельзя добавить null");
         }
         if (capacity == data.length) {
-            throw new IllegalArgumentException("Массив заполенен");
+            grow();
         }
         if (index < capacity) {
             System.arraycopy(data, index, data, index + 1, capacity - index);
@@ -155,6 +157,7 @@ public class StringListImpl implements StringList{
         }
         return true;
     }
+
     @Override
     public int size() {
         return capacity;
@@ -180,15 +183,42 @@ public class StringListImpl implements StringList{
         return array;
     }
 
+    @Override
     public void sortInsertions(Integer[] arr) {
-        for (int i = 1; i < arr.length; i++) {
-            int temp = arr[i];
-            int j = i;
-            while (j > 0 && arr[j - 1] >= temp) {
-                arr[j] = arr[j - 1];
-                j--;
-            }
-            arr[j] = temp;
+        quickSort(arr, 0, arr.length - 1);
+    }
+
+    private void quickSort(Integer[] arr, int begin, int end) {
+        if (begin < end) {
+            int partitionIndex = partition(arr, begin, end);
+
+            quickSort(arr, begin, partitionIndex - 1);
+            quickSort(arr, partitionIndex + 1, end);
         }
+    }
+
+    private int partition(Integer[] arr, int begin, int end) {
+        int pivot = arr[end];
+        int i = (begin - 1);
+
+        for (int j = begin; j < end; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+
+                swapElements(arr, i, j);
+            }
+        }
+        swapElements(arr, i + 1, end);
+        return i + 1;
+    }
+
+    private void swapElements(Integer[] arr, int left, int right) {
+        int temp = arr[left];
+        arr[left] = arr[right];
+        arr[right] = temp;
+    }
+
+    private void grow() {
+        data = Arrays.copyOf(data, capacity + capacity / 2);
     }
 }
